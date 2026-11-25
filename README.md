@@ -4,7 +4,8 @@ A free, youth-led, cross-school community for open-source software.
 This repository is the home of the project catalog, submission process,
 and community standards. Listed projects stay with their original developers.
 
-**[Explore the project catalog](PROJECTS.md)** ·
+**[Visual project gallery](https://aiscihub-oss.github.io/community/)** ·
+**[Markdown catalog](PROJECTS.md)** ·
 **[Submission process](CONTRIBUTING.md#submit-a-project)** ·
 **[Contribute](CONTRIBUTING.md)**
 
@@ -16,6 +17,7 @@ and community standards. Listed projects stay with their original developers.
 | I want to… | Go to |
 | --- | --- |
 | Find software or a first contribution | [Project catalog](PROJECTS.md) |
+| Explore the visual showcase | [Project gallery](https://aiscihub-oss.github.io/community/) |
 | List a project from any public GitHub account | [Submission guide](CONTRIBUTING.md#submit-a-project) |
 | Understand the quality bar | [Project eligibility](PROJECT_ELIGIBILITY.md) |
 | Understand community expectations | [Code of conduct](CODE_OF_CONDUCT.md) |
@@ -35,8 +37,9 @@ You do not need to join the GitHub organization or transfer your repository.
    [the YAML registry](registry/projects.yml).
 4. Read-only GitHub Actions validate the registry and public repositories.
    A human maintainer approves the pull request before it is merged.
-5. A separate scheduled workflow generates an updated metadata snapshot and
-   Markdown catalog from the reviewed registry on `main`. Maintainers review
+5. A separate scheduled workflow generates an updated metadata snapshot,
+   Markdown catalog, and static project gallery from the reviewed registry
+   on `main`. Maintainers review
    and publish the generated files through a pull request.
 
 Issues cannot add entries to the registry. The approved registry on `main`
@@ -61,14 +64,18 @@ python scripts/catalog.py check
 | --- | --- |
 | `python scripts/catalog.py check` | Offline schema, membership, and generated-file consistency checks |
 | `python scripts/catalog.py validate` | Live checks of each public repository's identity, availability, README, and license |
-| `python scripts/catalog.py refresh` | Fetch public metadata and regenerate `registry/metadata.json` and `PROJECTS.md` |
-| `python scripts/catalog.py render` | Rebuild just the Markdown from the checked metadata snapshot, offline |
+| `python scripts/catalog.py refresh` | Fetch public metadata and regenerate `registry/metadata.json`, `PROJECTS.md`, and `docs/index.html` |
+| `python scripts/catalog.py render` | Rebuild the Markdown and visual gallery from the checked metadata snapshot, offline |
 
 The live commands use the public GitHub REST API. They work anonymously for
 small registries. GitHub Actions uses its built-in, read-only `GITHUB_TOKEN`
 where supported and retries a scope-denied public request anonymously.
 No additional credentials are needed; rate-limit errors fail the check.
 Nothing is cloned, installed, or executed from listed repositories.
+
+The gallery is plain HTML, CSS, and JavaScript. Open `docs/index.html`
+locally to preview it. See [gallery development and hosting](GALLERY.md)
+for the GitHub Pages setup and cover-image rules.
 
 ## Project information only
 

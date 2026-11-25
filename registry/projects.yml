@@ -6,15 +6,33 @@ projects:
     category: developer-tools
     summary: Local authentication-cookie security checks for AI browser agents, browser extensions, and CI pipelines.
     license: MIT
+    cover:
+      image: cookieguard-ai.png
+      alt: CookieGuard AI project cover showing local security-check results.
   - name: BenefitStep
     repository: aiscihub/benefitstep
     repository_id: 1404520328
     category: civic-tech
     summary: A Chrome extension for preparing and reviewing unsigned California public-benefit application drafts locally.
     license: MIT
+    cover:
+      image: benefitstep.png
+      alt: BenefitStep project homepage introducing the application preparation extension.
   - name: PocketStop
     repository: aiscihub/PocketStop
     repository_id: 1372017013
     category: scientific-computing
     summary: Risk-aware early-stopping and reproducibility tools for computational molecular-dynamics trajectories.
     license: MIT
+    cover:
+      image: pocketstop.png
+      alt: Published PocketStop computational analysis diagram and dashboard illustration.
+  - name: AirWater AI
+    repository: aiscihub/airwater_app
+    repository_id: 1341257458
+    category: scientific-computing
+    summary: A climate-aware research-screening tool comparing materials for atmospheric water harvesting using public experimental adsorption data.
+    license: MIT
+    cover:
+      image: airwater-ai.png
+      alt: AirWater AI project logo depicting a water droplet and material framework.

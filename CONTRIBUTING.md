@@ -37,8 +37,9 @@ are activated. The process below describes how submissions will work.
 - Read the [registry reference](registry/README.md) before editing entries.
   Use a maintainer-reviewed description and the repository's canonical name.
 - Use a branch or fork; never push directly to `main`. For registry changes,
-  run `python scripts/catalog.py refresh` and include both generated files.
-  For Markdown-only rendering, use `python scripts/catalog.py render`.
+  run `python scripts/catalog.py refresh` and include the three generated
+  files: `registry/metadata.json`, `PROJECTS.md`, and `docs/index.html`.
+  For offline rendering, use `python scripts/catalog.py render`.
 - Run `python -m unittest discover -s tests -v` and
   `python scripts/catalog.py check` before opening a pull request. Review all
   generated text and links. Do not add secrets or personal information.

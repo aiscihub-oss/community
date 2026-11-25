@@ -104,6 +104,7 @@ class TemporaryRegistry(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
         (self.root / "registry").mkdir()
+        (self.root / "docs/assets/projects").mkdir(parents=True)
         for name in ("projects.schema.json", "metadata.schema.json"):
             shutil.copyfile(catalog.ROOT / "registry" / name, self.root / "registry" / name)
         self.registry_path = self.root / "registry/projects.yml"
@@ -176,6 +177,33 @@ class RegistryTests(TemporaryRegistry):
         ):
             with self.subTest(fields=fields):
                 self.assert_invalid(registry(project(**fields)))
+
+    def test_reviewed_local_cover_and_optional_fallback(self):
+        cover_dir = self.root / "docs/assets/projects"
+        shutil.copyfile(catalog.ROOT / "docs/assets/projects/cookieguard-ai.png", cover_dir / "cover.png")
+        entry = project(cover={"image": "cover.png", "alt": "A public project preview"})
+        data = registry(entry)
+        self.assertEqual(self.load(data), data)
+        self.assertEqual(self.load(registry(project())), registry(project()))
+
+    def test_reject_unreviewed_or_invalid_cover_assets(self):
+        cover_dir = self.root / "docs/assets/projects"
+        (cover_dir / "invalid.png").write_text("not a raster image")
+        for cover in (
+            {"image": "https://example.com/cover.png", "alt": "External"},
+            {"image": "../cover.png", "alt": "Outside"},
+            {"image": "cover.svg", "alt": "Active format"},
+            {"image": "missing.png", "alt": "Missing file"},
+            {"image": "invalid.png", "alt": "Invalid encoding"},
+            {"image": "missing.png", "alt": "Two\nlines"},
+            {"image": "missing.png", "alt": "Extra field", "url": "https://example.com"},
+        ):
+            with self.subTest(cover=cover):
+                self.assert_invalid(registry(project(cover=cover)))
+        outside = self.root / "outside.png"
+        shutil.copyfile(catalog.ROOT / "docs/assets/projects/cookieguard-ai.png", outside)
+        (cover_dir / "linked.png").symlink_to(outside)
+        self.assert_invalid(registry(project(cover={"image": "linked.png", "alt": "Symlink"})))
 
     def test_yaml_rejects_duplicate_keys_anchors_tags_and_bad_mapping(self):
         for data in (
@@ -448,18 +476,23 @@ class CatalogTests(TemporaryRegistry):
         factory = lambda token=None: api
         output = self.root / "PROJECTS.md"
         metadata = self.root / "registry/metadata.json"
+        gallery = self.root / "docs/index.html"
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             self.assertEqual(catalog.main(["refresh"], self.root, factory), 0)
             self.assertEqual(catalog.main(["check"], self.root, factory), 0)
-            files = (metadata.read_bytes(), output.read_bytes())
+            files = (metadata.read_bytes(), output.read_bytes(), gallery.read_bytes())
             output.write_text("hand-edited catalog")
             self.assertEqual(catalog.main(["check"], self.root, factory), 1)
             self.assertEqual(catalog.main(["render"], self.root, factory), 0)
             self.assertEqual(output.read_bytes(), files[1])
+            gallery.write_text("hand-edited gallery")
+            self.assertEqual(catalog.main(["check"], self.root, factory), 1)
+            self.assertEqual(catalog.main(["render"], self.root, factory), 0)
+            self.assertEqual(gallery.read_bytes(), files[2])
             self.assertEqual(catalog.main(["validate"], self.root, factory), 0)
             del api.responses[(p["repository"], "/license")]
             self.assertEqual(catalog.main(["refresh"], self.root, factory), 1)
-            self.assertEqual((metadata.read_bytes(), output.read_bytes()), files)
+            self.assertEqual((metadata.read_bytes(), output.read_bytes(), gallery.read_bytes()), files)
 
 
 if __name__ == "__main__":

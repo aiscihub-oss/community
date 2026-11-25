@@ -16,7 +16,7 @@ They do not own listed projects or control their releases.
 3. If the project fits, write a plain-text project description and add an
    entry with the correct repository ID and SPDX identifier. Use the
    [registry reference](registry/README.md) and run the live refresh.
-4. Check the diff of the registry and both generated files. Verify links
+4. Check the diff of the registry and all three generated files. Verify links
    are for the intended repository. Open a pull request referencing the
    submission. A maintainer who did not author the change must approve it
    after required CI checks pass. Do not bypass the merge rules.
@@ -27,7 +27,7 @@ They do not own listed projects or control their releases.
 
 - Review the weekly **Refresh project catalog** workflow and its artifact.
   Confirm the run came from `main`, against the current reviewed registry.
-  Download the two generated files or run `python scripts/catalog.py refresh`
+  Download the three generated files or run `python scripts/catalog.py refresh`
   locally; review and publish changes through a normal pull request.
 - If a repository becomes inaccessible, archived, or changes identity or
   license, live validation fails and the last reviewed files are left intact.
@@ -37,6 +37,11 @@ They do not own listed projects or control their releases.
   misleading descriptions. Refresh the date when updating the snapshot.
 - Keep the schema, categories, tests, issue form, and workflow action/dependency
   pins in sync. Review tooling changes as code, not as submission data.
+- Review optional gallery covers using the [image credits and review rules](registry/gallery-assets.md).
+  Only locally committed, reviewed raster assets are used; no submitted image
+  URL is fetched automatically. Keep the static gallery and Markdown catalog
+  aligned with the registry, and update the profile's launch showcase if a
+  seed is removed.
 
 ## Keep the trust boundary clear
 

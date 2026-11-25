@@ -44,7 +44,7 @@ class InfrastructureTests(unittest.TestCase):
                         if "run" in step:
                             self.assertNotRegex(step["run"], re.compile(r"git push|gh pr|\$\{\{"))
 
-    def test_refresh_uses_approved_branch_and_only_two_artifact_files(self):
+    def test_refresh_uses_approved_branch_and_only_generated_artifact_files(self):
         workflow = self.load_yaml(".github/workflows/refresh.yml")
         self.assertEqual(set(workflow["on"]), {"schedule", "workflow_dispatch", "push"})
         refresh = workflow["jobs"]["refresh"]
@@ -53,7 +53,7 @@ class InfrastructureTests(unittest.TestCase):
         commands = [step["run"] for step in refresh["steps"] if "run" in step]
         self.assertIn("python scripts/catalog.py refresh", commands)
         artifact = next(step for step in refresh["steps"] if step.get("uses", "").startswith("actions/upload-artifact"))
-        self.assertEqual(set(artifact["with"]["path"].split()), {"PROJECTS.md", "registry/metadata.json"})
+        self.assertEqual(set(artifact["with"]["path"].split()), {"PROJECTS.md", "registry/metadata.json", "docs/index.html"})
 
     def test_ci_runs_tests_offline_check_and_live_validation(self):
         workflow = self.load_yaml(".github/workflows/validate.yml")

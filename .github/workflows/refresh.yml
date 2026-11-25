@@ -12,6 +12,9 @@ on:
       - registry/projects.schema.json
       - registry/metadata.schema.json
       - scripts/catalog.py
+      - scripts/gallery.py
+      - scripts/gallery_template.html
+      - docs/assets/projects/**
       - requirements.txt
       - .github/workflows/refresh.yml
 
@@ -41,7 +44,7 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: "python -m pip install --disable-pip-version-check --only-binary=:all: -r requirements.txt"
-      - name: Collect metadata and generate Markdown
+      - name: Collect metadata and generate catalog and gallery
         run: python scripts/catalog.py refresh
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -54,5 +57,6 @@ jobs:
           path: |
             PROJECTS.md
             registry/metadata.json
+            docs/index.html
           if-no-files-found: error
           retention-days: 7

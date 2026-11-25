@@ -22,6 +22,11 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 from referencing import Registry
 
+if __package__:
+    from .gallery import render_gallery
+else:
+    from gallery import render_gallery
+
 
 ROOT = Path(__file__).resolve().parents[1]
 API_ROOT = "https://api.github.com"
@@ -38,6 +43,8 @@ CATEGORIES = {
 }
 MAX_LOCAL_BYTES = 512 * 1024
 MAX_API_BYTES = 4 * 1024 * 1024
+MAX_COVER_BYTES = 4 * 1024 * 1024
+COVER_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]{0,79}\.(png|jpg|webp)")
 
 
 class CatalogError(Exception):
@@ -154,6 +161,28 @@ def positive_integer(value, field):
     return value
 
 
+def validate_cover(project, root):
+    """Only locally reviewed raster files can appear in the public gallery."""
+    cover = project.get("cover")
+    if cover is None:
+        return
+    filename = cover["image"]
+    if not COVER_PATTERN.fullmatch(filename):
+        raise CatalogError("Gallery image must be a local PNG, JPG, or WebP filename")
+    plain_text(cover["alt"], "gallery image alternative text", 160)
+    path = root / "docs/assets/projects" / filename
+    if not path.is_file() or not path.resolve().is_relative_to(root.resolve()):
+        raise CatalogError("Gallery image must exist inside the community repository")
+    data = read_bounded(path, MAX_COVER_BYTES)
+    signature_ok = {
+        ".png": data.startswith(b"\x89PNG\r\n\x1a\n"),
+        ".jpg": data.startswith(b"\xff\xd8\xff"),
+        ".webp": data.startswith(b"RIFF") and data[8:12] == b"WEBP",
+    }.get(path.suffix, False)
+    if not signature_ok:
+        raise CatalogError("Gallery image format does not match its file extension")
+
+
 def load_registry(root=ROOT):
     try:
         data = yaml.load(
@@ -176,6 +205,7 @@ def load_registry(root=ROOT):
         plain_text(project["summary"], "project summary", 240)
         if project["category"] not in CATEGORIES:
             raise CatalogError("Unknown project category")
+        validate_cover(project, root)
     return data
 
 
@@ -496,7 +526,7 @@ def render_catalog(registry, snapshot):
 
 def atomic_write(path, content):
     # A failed API check never reaches the write phase; individual files are
-    # replaced atomically once both complete outputs have been prepared.
+    # replaced atomically once all complete outputs have been prepared.
     with tempfile.NamedTemporaryFile(
         mode="w", encoding="utf-8", newline="\n", dir=path.parent, delete=False
     ) as stream:
@@ -512,6 +542,13 @@ def atomic_write(path, content):
         temp_path.unlink(missing_ok=True)
 
 
+def rendered_outputs(root, registry, snapshot):
+    return [
+        (root / "PROJECTS.md", render_catalog(registry, snapshot)),
+        (root / "docs/index.html", render_gallery(registry, snapshot, CATEGORIES)),
+    ]
+
+
 def main(argv=None, root=ROOT, client_factory=GitHubClient):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -523,16 +560,15 @@ def main(argv=None, root=ROOT, client_factory=GitHubClient):
     try:
         registry = load_registry(root)
         snapshot_file = root / "registry/metadata.json"
-        catalog_file = root / "PROJECTS.md"
         if args.command in {"check", "render"}:
             snapshot = decode_json(read_bounded(snapshot_file))
             validate_snapshot(registry, snapshot, root)
-            catalog = render_catalog(registry, snapshot)
-            if args.command == "check":
-                if read_bounded(catalog_file) != catalog.encode("utf-8"):
-                    raise CatalogError("PROJECTS.md is out of date; run render")
-            else:
-                atomic_write(catalog_file, catalog)
+            for path, content in rendered_outputs(root, registry, snapshot):
+                if args.command == "check":
+                    if read_bounded(path) != content.encode("utf-8"):
+                        raise CatalogError(f"{path.relative_to(root)} is out of date; run render")
+                else:
+                    atomic_write(path, content)
         else:
             client = client_factory(token=os.environ.get("GITHUB_TOKEN"))
             if args.command == "validate":
@@ -541,11 +577,12 @@ def main(argv=None, root=ROOT, client_factory=GitHubClient):
             else:
                 snapshot = collect_metadata(registry, client)
                 validate_snapshot(registry, snapshot, root)
-                catalog = render_catalog(registry, snapshot)
+                outputs = rendered_outputs(root, registry, snapshot)
                 atomic_write(
                     snapshot_file, json.dumps(snapshot, indent=2, ensure_ascii=True, sort_keys=True) + "\n"
                 )
-                atomic_write(catalog_file, catalog)
+                for path, content in outputs:
+                    atomic_write(path, content)
         print(f"{args.command}: {len(registry['projects'])} projects OK")
         return 0
     except (CatalogError, OSError, UnicodeError, RecursionError) as exc:

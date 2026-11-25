@@ -37,6 +37,19 @@
           ]
         },
         "summary": {"type": "string", "minLength": 1, "maxLength": 240},
+        "cover": {
+          "description": "Optional maintainer-reviewed local raster cover; remote image URLs are not accepted",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["image", "alt"],
+          "properties": {
+            "image": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{0,79}\\.(png|jpg|webp)$"
+            },
+            "alt": {"type": "string", "minLength": 1, "maxLength": 160}
+          }
+        },
         "license": {
           "description": "Expected GitHub-detected SPDX identifier for a reviewed open-source license",
           "type": "string",
