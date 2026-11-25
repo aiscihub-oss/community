@@ -1,0 +1,58 @@
+name: Refresh project catalog
+
+on:
+  schedule:
+    # Mondays, 15:23 UTC.
+    - cron: "23 15 * * 1"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - registry/projects.yml
+      - registry/projects.schema.json
+      - registry/metadata.schema.json
+      - scripts/catalog.py
+      - requirements.txt
+      - .github/workflows/refresh.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    # The default branch is the reviewed registry. Never refresh from a fork PR
+    # or a manually selected non-main branch.
+    if: github.ref == 'refs/heads/main'
+    name: Generate catalog for review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out approved registry
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: "python -m pip install --disable-pip-version-check --only-binary=:all: -r requirements.txt"
+      - name: Collect metadata and generate Markdown
+        run: python scripts/catalog.py refresh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Check generated output
+        run: python scripts/catalog.py check
+      - name: Upload reviewable catalog (no publication)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog-refresh
+          path: |
+            PROJECTS.md
+            registry/metadata.json
+          if-no-files-found: error
+          retention-days: 7

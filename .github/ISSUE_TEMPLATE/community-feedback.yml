@@ -1,0 +1,20 @@
+name: Community feedback
+description: Report a catalog error or suggest a change to the community infrastructure.
+title: "[Community] "
+labels: ["community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is public. Include only non-sensitive information about the
+        community repository. Report issues in a listed project to its own
+        maintainers. Use GitHub's private abuse-reporting tools for harassment
+        or sensitive incidents; do not describe private matters here.
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What should change?
+      description: Describe the catalog or infrastructure issue without personal information or secrets.
+      render: text
+    validations:
+      required: true

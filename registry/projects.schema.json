@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AISciHub OSS approved project registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "projects"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "projects": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {"$ref": "#/$defs/project"}
+    }
+  },
+  "$defs": {
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "repository", "repository_id", "category", "summary", "license"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 80},
+        "repository": {
+          "description": "GitHub owner/repository, not a URL",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/[A-Za-z0-9_.-]{1,100}$"
+        },
+        "repository_id": {"type": "integer", "minimum": 1},
+        "category": {
+          "type": "string",
+          "enum": [
+            "ai-and-automation",
+            "apps-and-utilities",
+            "civic-tech",
+            "developer-tools",
+            "scientific-computing",
+            "web-and-browser"
+          ]
+        },
+        "summary": {"type": "string", "minLength": 1, "maxLength": 240},
+        "license": {
+          "description": "Expected GitHub-detected SPDX identifier for a reviewed open-source license",
+          "type": "string",
+          "enum": [
+            "0BSD",
+            "Apache-2.0",
+            "AGPL-3.0",
+            "AGPL-3.0-only",
+            "AGPL-3.0-or-later",
+            "BSD-2-Clause",
+            "BSD-3-Clause",
+            "BSL-1.0",
+            "EPL-1.0",
+            "EPL-2.0",
+            "GPL-2.0",
+            "GPL-2.0-only",
+            "GPL-2.0-or-later",
+            "GPL-3.0",
+            "GPL-3.0-only",
+            "GPL-3.0-or-later",
+            "ISC",
+            "LGPL-2.1",
+            "LGPL-2.1-only",
+            "LGPL-2.1-or-later",
+            "LGPL-3.0",
+            "LGPL-3.0-only",
+            "LGPL-3.0-or-later",
+            "MIT",
+            "MPL-2.0",
+            "Unlicense",
+            "Zlib"
+          ]
+        }
+      }
+    }
+  }
+}

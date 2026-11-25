@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AISciHub OSS generated public metadata snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "checked_on", "projects"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "checked_on": {"type": "string", "format": "date"},
+    "projects": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repository", "repository_id", "visibility", "language",
+          "default_branch", "readme_path", "license", "license_path",
+          "issues_enabled", "latest_release", "good_first_issues"
+        ],
+        "properties": {
+          "repository": {"type": "string", "minLength": 3, "maxLength": 140},
+          "repository_id": {"type": "integer", "minimum": 1},
+          "visibility": {"const": "public"},
+          "language": {
+            "type": ["string", "null"],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "default_branch": {"type": "string", "minLength": 1, "maxLength": 255},
+          "readme_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "license": {"type": "string", "minLength": 1, "maxLength": 80},
+          "license_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "issues_enabled": {"type": "boolean"},
+          "latest_release": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["tag", "published_on"],
+                "properties": {
+                  "tag": {"type": "string", "minLength": 1, "maxLength": 255},
+                  "published_on": {"type": "string", "format": "date"}
+                }
+              }
+            ]
+          },
+          "good_first_issues": {
+            "type": "array",
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {"type": "integer", "minimum": 1}
+          }
+        }
+      }
+    }
+  }
+}

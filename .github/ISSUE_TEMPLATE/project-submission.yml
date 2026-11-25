@@ -1,0 +1,72 @@
+name: Submit a project
+description: Propose a public open-source repository for the AISciHub OSS catalog.
+title: "[Project] "
+labels: ["project-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Projects stay in their own repositories. A submission is a proposal,
+        not a listing; a maintainer will review it before any registry change.
+
+        **This issue is public.** Share project information only. Do not include
+        real names, ages, school names, email addresses, contact details, photos,
+        private documents, credentials, or other personal information.
+  - type: input
+    id: project_name
+    attributes:
+      label: Project name
+      placeholder: "Example: Open Map Tools"
+    validations:
+      required: true
+  - type: input
+    id: repository
+    attributes:
+      label: Public GitHub repository
+      description: Use the canonical repository URL, not a website, branch, release, or file URL.
+      placeholder: "https://github.com/OWNER/REPOSITORY"
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Project area
+      description: Choose the area that best describes the software.
+      options:
+        - AI & automation
+        - Apps & utilities
+        - Civic tech & accessibility
+        - Developer tools & security
+        - Scientific computing & data
+        - Web & browser
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: One-sentence description
+      description: Describe what a developer or user can do with the project in plain text (up to 240 characters). No personal details or promotional links.
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: Open-source license
+      description: Give the SPDX identifier for the license already in the repository.
+      placeholder: "MIT"
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      description: A maintainer will verify these statements; a checked box does not approve the project.
+      options:
+        - label: I maintain this project, or its maintainers have agreed to its listing.
+          required: true
+        - label: The repository is public and has a useful README and an open-source license.
+          required: true
+        - label: I am sharing project information only, without personal or private data.
+          required: true
+        - label: I agree to the [Code of Conduct](https://github.com/aiscihub-oss/community/blob/main/CODE_OF_CONDUCT.md) and have read the [project eligibility standards](https://github.com/aiscihub-oss/community/blob/main/PROJECT_ELIGIBILITY.md).
+          required: true

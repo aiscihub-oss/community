@@ -1,0 +1,20 @@
+schema_version: 1
+projects:
+  - name: CookieGuard AI
+    repository: aiscihub/cookieguard-ai
+    repository_id: 1148529247
+    category: developer-tools
+    summary: Local authentication-cookie security checks for AI browser agents, browser extensions, and CI pipelines.
+    license: MIT
+  - name: BenefitStep
+    repository: aiscihub/benefitstep
+    repository_id: 1404520328
+    category: civic-tech
+    summary: A Chrome extension for preparing and reviewing unsigned California public-benefit application drafts locally.
+    license: MIT
+  - name: PocketStop
+    repository: aiscihub/PocketStop
+    repository_id: 1372017013
+    category: scientific-computing
+    summary: Risk-aware early-stopping and reproducibility tools for computational molecular-dynamics trajectories.
+    license: MIT

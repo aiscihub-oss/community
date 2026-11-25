@@ -1,0 +1,48 @@
+{
+  "checked_on": "2026-11-25",
+  "projects": [
+    {
+      "default_branch": "main",
+      "good_first_issues": [],
+      "issues_enabled": true,
+      "language": "JavaScript",
+      "latest_release": null,
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "readme_path": "README.md",
+      "repository": "aiscihub/benefitstep",
+      "repository_id": 1404520328,
+      "visibility": "public"
+    },
+    {
+      "default_branch": "main",
+      "good_first_issues": [],
+      "issues_enabled": true,
+      "language": "HTML",
+      "latest_release": {
+        "published_on": "2026-11-14",
+        "tag": "cookieguard-v0.4.0"
+      },
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "readme_path": "README.md",
+      "repository": "aiscihub/cookieguard-ai",
+      "repository_id": 1148529247,
+      "visibility": "public"
+    },
+    {
+      "default_branch": "main",
+      "good_first_issues": [],
+      "issues_enabled": true,
+      "language": "Python",
+      "latest_release": null,
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "readme_path": "README.md",
+      "repository": "aiscihub/PocketStop",
+      "repository_id": 1372017013,
+      "visibility": "public"
+    }
+  ],
+  "schema_version": 1
+}
